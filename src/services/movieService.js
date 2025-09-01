@@ -27,8 +27,7 @@ class MovieService {
         LIMIT ${safeLimit} OFFSET ${safeOffset}
       `;
       
-      console.log('Executing query:', query);
-      console.log('Query parameters:', params);
+
       
       const [rows] = await pool.execute(query, params);
       return {
@@ -41,7 +40,6 @@ class MovieService {
         }
       };
     } catch (error) {
-      console.error('Database error in findAllMovies:', error);
       throw new Error(`Error finding movies: ${error.message}`);
     }
   }
@@ -116,14 +114,12 @@ class MovieService {
         WHERE id = ?
       `;
       
-      console.log('Executing update query:', query);
-      console.log('Update parameters:', [...updateValues, id]);
+
       
       await pool.execute(query, [...updateValues, id]);
       const updatedMovie = await this.findMovieById(id);
       return updatedMovie;
     } catch (error) {
-      console.error('Database error in updateMovie:', error);
       throw new Error(`Error updating movie: ${error.message}`);
     }
   }

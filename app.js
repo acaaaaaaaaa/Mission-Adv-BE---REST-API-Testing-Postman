@@ -3,7 +3,10 @@ const cors = require('cors');
 require('dotenv').config();
 const { testConnection } = require('./src/configs/database');
 const movieRoutes = require('./src/routes/movieRoutes');
+const userRoutes = require('./src/routes/userRoutes');
+const uploadRoutes = require('./src/routes/uploadRoutes');
 const { errorHandler, notFoundHandler } = require('./src/middleware/errorHandler');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -16,7 +19,12 @@ app.use((req, res, next) => {
   next();
 });
 
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use('/api', movieRoutes);
+app.use('/api', userRoutes);
+app.use('/api', uploadRoutes);
 
 app.get('/', (req, res) => {
   res.status(200).json({

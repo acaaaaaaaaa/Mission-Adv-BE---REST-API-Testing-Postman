@@ -70,6 +70,39 @@ const querySchema = Joi.object({
   })
 });
 
+// User validation schemas
+const registerSchema = Joi.object({
+  username: Joi.string().required().min(3).max(30).pattern(/^[a-zA-Z0-9_]+$/).messages({
+    'string.empty': 'Username tidak boleh kosong',
+    'string.min': 'Username minimal 3 karakter',
+    'string.max': 'Username maksimal 30 karakter',
+    'string.pattern.base': 'Username hanya boleh mengandung huruf, angka, dan underscore',
+    'any.required': 'Username wajib diisi'
+  }),
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Email tidak boleh kosong',
+    'string.email': 'Format email tidak valid',
+    'any.required': 'Email wajib diisi'
+  }),
+  password: Joi.string().required().min(6).messages({
+    'string.empty': 'Password tidak boleh kosong',
+    'string.min': 'Password minimal 6 karakter',
+    'any.required': 'Password wajib diisi'
+  })
+});
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required().messages({
+    'string.empty': 'Email tidak boleh kosong',
+    'string.email': 'Format email tidak valid',
+    'any.required': 'Email wajib diisi'
+  }),
+  password: Joi.string().required().messages({
+    'string.empty': 'Password tidak boleh kosong',
+    'any.required': 'Password wajib diisi'
+  })
+});
+
 const validateCreateMovie = (req, res, next) => {
   const { error, value } = createMovieSchema.validate(req.body);
   
@@ -115,8 +148,40 @@ const validateQuery = (req, res, next) => {
   next();
 };
 
+const validateRegister = (req, res, next) => {
+  const { error, value } = registerSchema.validate(req.body);
+  
+  if (error) {
+    return res.status(400).json({
+      status: false,
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message)
+    });
+  }
+  
+  req.validatedBody = value;
+  next();
+};
+
+const validateLogin = (req, res, next) => {
+  const { error, value } = loginSchema.validate(req.body);
+  
+  if (error) {
+    return res.status(400).json({
+      status: false,
+      message: 'Validation error',
+      errors: error.details.map(detail => detail.message)
+    });
+  }
+  
+  req.validatedBody = value;
+  next();
+};
+
 module.exports = {
   validateCreateMovie,
   validateUpdateMovie,
-  validateQuery
+  validateQuery,
+  validateRegister,
+  validateLogin
 };
